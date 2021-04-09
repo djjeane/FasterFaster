@@ -6,59 +6,37 @@ using UnityEngine.Tilemaps;
 public class PlayerAttack : MonoBehaviour
 {
     public int CellAttackRange;
+    public bool RangedAttack;
+
+    public GameObject bulletPrefab;
+
+    private Attack attack;
     // Start is called before the first frame update
     void Start()
     {
-        
+        if (RangedAttack)
+        {
+            attack = ScriptableObject.CreateInstance<PlayerRangedAttack>();
+           
+        }
+        else
+        {
+            attack = ScriptableObject.CreateInstance<PlayerMeleeAttack>();
+            attack.InitMelee(CellAttackRange, transform);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+
+        if (Input.GetKeyDown(attack.attackKey))
         {
             Vector3 point = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            var worldPoint = new Vector3Int(Mathf.FloorToInt(point.x), Mathf.FloorToInt(point.y),0);
-            
-            if (isWithinRange(worldPoint))
-            {
-                var tiles = GameTiles.tiles; // This is our Dictionary of tiles
-                WorldTile tile;
-                if (tiles.TryGetValue(worldPoint, out tile))
-                { 
-                    print("Attacking tile : \n" + tile.ToString());   
-                    if (tile.hasEnemy)
-                    {
-                        tile.hasEnemy = false;
-                        Destroy(tile.entity);
-                        tile.entity = null;
-                    }
-                }
-            }
+            var worldPoint = new Vector3Int(Mathf.FloorToInt(point.x), Mathf.FloorToInt(point.y), 0);
+            attack.PerformAttack(worldPoint);
+          
         }
     }
-    
-    public bool isWithinRange(Vector3Int worldPoint)
-    {
-        var tiles = GameTiles.tiles; // This is our Dictionary of tiles
-        var playerPosition  = new Vector3Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y), 0);
-
-        for (int x = playerPosition.x - CellAttackRange; x <= playerPosition.x + CellAttackRange; x++)
-        {
-            for (int y = playerPosition.y - CellAttackRange; y <= playerPosition.y + CellAttackRange; y++)
-            {
-                if(x == playerPosition.x && y == playerPosition.y)
-                {
-                    //This is the cell the player is standing on, ignore it
-                    continue;
-                }
-
-                if (worldPoint.x == x && worldPoint.y == y)
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+ 
 }
