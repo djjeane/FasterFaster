@@ -20,22 +20,18 @@ public class Spawner : ScriptableObject
         this.numEnemies = numEnemies;
     }
 
-    // Start is called before the first frame update
-
-
     public void SpawnEnemies()
     {
         int enemiesSpawned = 0;
         while(enemiesSpawned < numEnemies)
         {
-            int index = UnityEngine.Random.Range(0, GameTiles.instance.tiles.Count);
-            KeyValuePair<Vector3, WorldTile> enemyTile = GameTiles.instance.tiles.ElementAt(index);
-
-            if(!GameTiles.instance.tiles[enemyTile.Key].hasPlayer && !GameTiles.instance.tiles[enemyTile.Key].hasWall && !GameTiles.instance.tiles[enemyTile.Key].hasEnemy)
+            int index = UnityEngine.Random.Range(0, GameTiles.tiles.Count);
+            var tile = GameTiles.tiles.ElementAt(index).Value;
+            if (!tile.hasPlayer && !tile.hasWall && !tile.hasEnemy)
             {
-                var enemy = Instantiate(enemyObject, enemyTile.Key + new Vector3(0.5f, 0.5f, 0), Quaternion.identity);
-                GameTiles.instance.tiles[enemyTile.Key].hasEnemy = true;
-                GameTiles.instance.tiles[enemyTile.Key].entity = enemy;
+                var enemy = Instantiate(enemyObject, tile.WorldLocation + new Vector3(0.5f, 0.5f, 0), Quaternion.identity);
+                tile.hasEnemy = true;
+                tile.entity = enemy;
                 enemiesSpawned++;
             }
         }
@@ -43,27 +39,18 @@ public class Spawner : ScriptableObject
 
     public void SpawnPlayer()
     {
-        WorldTile tile;
         bool spawnedPlayer = false;
         while(!spawnedPlayer)
         {
-            int index = UnityEngine.Random.Range(0, GameTiles.instance.tiles.Count);
-            KeyValuePair<Vector3, WorldTile> playerTile = GameTiles.instance.tiles.ElementAt(index);
-            tile = GameTiles.instance.tiles[playerTile.Key];
+            int index = UnityEngine.Random.Range(0, GameTiles.tiles.Count);
+            var tile = GameTiles.tiles.ElementAt(index).Value;
             if (!tile.hasWall)
             {
-                var player = Instantiate(playerObject, playerTile.Key + new Vector3(0.5f, 0.5f, 0), Quaternion.identity);
-                GameTiles.instance.tiles[playerTile.Key].hasPlayer = true;
-                GameTiles.instance.tiles[playerTile.Key].entity = player;
+                var player = Instantiate(playerObject, tile.WorldLocation + new Vector3(0.5f, 0.5f, 0), Quaternion.identity);
+                tile.hasPlayer = true;
+                tile.entity = player;
                 spawnedPlayer = true;
             }
         }
-       
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

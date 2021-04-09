@@ -7,7 +7,7 @@ using static GameTiles;
 public class PathFinding
 {
     // Start is called before the first frame update
-    public static Stack<Node> FindPath(Vector3 start, Vector3 end)
+    public static Stack<WorldTile> FindPath(Vector3 start, Vector3 end)
     {
         var nodes = PathGrid.nodes;
         Node startNode = nodes[start];
@@ -60,20 +60,28 @@ public class PathFinding
 
 
         }
-        Debug.LogWarning("Could not find path to this square");
-        return new Stack<Node>();
+        return new Stack<WorldTile>();
 
     }
 
-    private static Stack<Node> RetracePath(Node startNode, Node endNode)
+    private static Stack<WorldTile> RetracePath(Node startNode, Node endNode)
     {
-        Stack<Node> path = new Stack<Node>();
+        Stack<WorldTile> path = new Stack<WorldTile>();
         Node currentNode = endNode;
 
         while (currentNode != startNode)
         {
-            path.Push(currentNode);
-            currentNode = currentNode.parent;
+            WorldTile currentTile;
+            var nodeVector = new Vector3(currentNode.gridX, currentNode.gridY, 0);
+            if(GameTiles.tiles.TryGetValue(nodeVector, out currentTile))
+            {
+                path.Push(currentTile);
+                currentNode = currentNode.parent;
+            }
+            else
+            {
+                Debug.LogError($"Could not convert node to tile for {nodeVector}");
+            }
         }
         //path.Reverse();
 
@@ -109,7 +117,7 @@ public static class PathGrid
     {
 
         nodes = new Dictionary<Vector3, Node>();
-        foreach (var keyValue in GameTiles.instance.tiles)
+        foreach (var keyValue in GameTiles.tiles)
         {
             var pos = keyValue.Key;
             var tile = keyValue.Value;
@@ -135,7 +143,7 @@ public static class PathGrid
                 int checkX = node.gridX + x;
                 int checkY = node.gridY + y;
                 var location = new Vector3(checkX, checkY, 0);
-                if (instance.tiles.ContainsKey(location))
+                if (tiles.ContainsKey(location))
                 {
                     //instance.tiles[location].TilemapMember.SetTileFlags(instance.tiles[location].LocalPlace, TileFlags.None);
                     //instance.tiles[location].TilemapMember.SetColor(instance.tiles[location].LocalPlace, Color.red);
@@ -148,7 +156,7 @@ public static class PathGrid
     }
 }
 
-public class Node : WorldTile
+public class Node
 {
     public bool walkable { get; set; }
     public int gCost { get; set; }

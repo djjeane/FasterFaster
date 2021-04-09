@@ -2,44 +2,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class GameTiles : MonoBehaviour
+public static class GameTiles
 {
-	public static GameTiles instance;
-	public Tilemap Tilemap;
+	public static Tilemap groundTileMap;
 
-	public Dictionary<Vector3, WorldTile> tiles;
-
-	private void Awake()
-	{
-		if (instance == null)
-		{
-			instance = this;
-		}
-		else if (instance != this)
-		{
-			Destroy(gameObject);
-		}
-
-		GetWorldTiles();
-	}
+	public static Dictionary<Vector3, WorldTile> tiles;
 
 	// Use this for initialization
-	private void GetWorldTiles()
+	public static void BuildTilesDict(Tilemap tilemap)
 	{
+		groundTileMap = tilemap;
 		tiles = new Dictionary<Vector3, WorldTile>();
-		foreach (Vector3Int pos in Tilemap.cellBounds.allPositionsWithin)
+		foreach (Vector3Int pos in groundTileMap.cellBounds.allPositionsWithin)
 		{
-			var localPlace = new Vector3Int(pos.x, pos.y, pos.z);
+			var localPlace = new Vector3Int(pos.x, pos.y, 0);
 
-			if (!Tilemap.HasTile(localPlace)) continue;
+			if (!groundTileMap.HasTile(localPlace)) continue;
 			var tile = new WorldTile
 			{
 				LocalPlace = localPlace,
-				WorldLocation = Tilemap.CellToWorld(localPlace),
-				TileBase = Tilemap.GetTile(localPlace),
-				TilemapMember = Tilemap,
+				WorldLocation = groundTileMap.CellToWorld(localPlace),
+				TileBase = groundTileMap.GetTile(localPlace),
+				TilemapMember = groundTileMap,
 				Name = localPlace.x + "," + localPlace.y,
-				Cost = 1 // TODO: Change this with the proper cost from ruletile
+				Cost = 1
 			};
 
 			tiles.Add(tile.WorldLocation, tile);

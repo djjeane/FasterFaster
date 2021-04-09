@@ -216,7 +216,6 @@ GameObject:
   m_Component:
   - component: {fileID: 761331065}
   - component: {fileID: 761331064}
-  - component: {fileID: 761331063}
   - component: {fileID: 761331066}
   m_Layer: 0
   m_Name: Grid
@@ -225,19 +224,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &761331063
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 761331062}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cf49b7cf94569d4fb38da168df36ea9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Tilemap: {fileID: 2108602114}
 --- !u!156049354 &761331064
 Grid:
   m_ObjectHideFlags: 0
@@ -277,13 +263,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87e7a4ee79be6e64894c69425eaa166e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seed: Dawson
-  useRandomSeed: 0
+  seed: 
+  useRandomSeed: 1
   wallObject: {fileID: 3981952947157535998, guid: 522ac036e1fc537489778ff880e17111, type: 3}
   playerObject: {fileID: 3846957854936673593, guid: 4eabf4b050f913042aa73afa7e189b69, type: 3}
   enemyObject: {fileID: 4229443481681369596, guid: b387fb7fb76586a4c8277c2b6d8a7fc6, type: 3}
-  numEnemies: 5
-  numWalls: 20
+  numEnemies: 2
+  numWalls: 1
+  groundTilemap: {fileID: 2108602114}
 --- !u!1 &1534396474
 GameObject:
   m_ObjectHideFlags: 0

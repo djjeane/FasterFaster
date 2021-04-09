@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class MapGenerator : MonoBehaviour
 {
@@ -11,20 +12,23 @@ public class MapGenerator : MonoBehaviour
     public GameObject enemyObject;
     public int numEnemies;
     public int numWalls;
+
+    public Tilemap groundTilemap;
     // Start is called before the first frame update
     void Start()
     {
         GenerateWorld(useRandomSeed);
-        PathGrid.BuildGrid();
-
     }
 
     private void GenerateWorld(bool useRSeed)
     {
         if (useRSeed)
         {
-            seed = Time.time.ToString();
+            seed = System.DateTime.Now.ToString();
         }
+
+        GameTiles.BuildTilesDict(groundTilemap);
+
 
         Random.InitState(seed.GetHashCode());
 
@@ -39,6 +43,8 @@ public class MapGenerator : MonoBehaviour
         spawner.numEnemies = numEnemies;
         spawner.SpawnPlayer();
         spawner.SpawnEnemies();
+        PathGrid.BuildGrid();
+
     }
 
     // Update is called once per frame
@@ -47,21 +53,35 @@ public class MapGenerator : MonoBehaviour
         //On right Click, lets redo the generation with a random seed for testing
         if (Input.GetMouseButtonDown(1))
         {
-            foreach (KeyValuePair<Vector3, WorldTile> entry in GameTiles.instance.tiles)
+            foreach (WorldTile tile in GameTiles.tiles.Values)
             {
-                if (entry.Value.entity != null)
+                if (tile.hasPlayer)
                 {
-                    Destroy(entry.Value.entity);
-                    entry.Value.hasEnemy = false;
-                    entry.Value.hasItem = false;
-                    entry.Value.hasPlayer = false;
-                    entry.Value.hasWall = false;
-                    entry.Value.entity = null;
+                    Destroy(tile.entity);
+                    tile.entity = null;
+                    tile.hasPlayer = false;
                 }
-            }
+                if (tile.hasWall)
+                {
+                    Destroy(tile.entity);
+                    tile.entity = null;
+                    tile.hasWall = false;
+                }
+                if (tile.hasEnemy)
+                {
+                    Destroy(tile.entity);
+                    tile.entity = null;
+                    tile.hasEnemy = false;
+                }
+                if(tile.highLightEntity != null)
+                {
+                    Destroy(tile.highLightEntity);
+                    tile.highLightEntity = null;
+                }
 
+            }
+            GameTiles.tiles = null;
             GenerateWorld(true);
-            PathGrid.BuildGrid();
 
         }
     }

@@ -8,11 +8,14 @@ using static GameTiles;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private WorldTile destinationTile;
+    public int MoveDistance = 3;
     private float movementSpeed = 10f;
+    public GameObject highlightPrefab;
+    private Stack<WorldTile> squaresToTravelTo;
+    private WorldTile destinationTile;
 
-    private Stack<Node> squaresToTravelTo;
-    private Node destinationNode;
+    private List<WorldTile> cellsInPlayerMoveRadius;
+    private Vector3Int lastPlayerPosition;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,54 +25,147 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+       
+        //Handles the movement highlighting
+        var playerPos = new Vector3Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y), 0);
+        if(lastPlayerPosition != playerPos)
+        {
+            var cellsPlayerCanMoveTo = GetCellsInMoveRadius(playerPos);
+            UnHighlightCells(cellsPlayerCanMoveTo);
+            cellsInPlayerMoveRadius = cellsPlayerCanMoveTo;
+            HighLightEmptyCells();
+            lastPlayerPosition = playerPos;
+        }
+     
+        //Handles movement on click
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 point = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             var worldPoint = new Vector3Int(Mathf.FloorToInt(point.x), Mathf.FloorToInt(point.y), 0);
-            var playerPos = new Vector3Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y), 0);
-            var tiles = GameTiles.instance.tiles; // This is our Dictionary of tiles
-            if(destinationTile != null)
+            WorldTile worldTile;
+            
+            //if we clicked on a tile
+            if (tiles.TryGetValue(worldPoint, out worldTile))
             {
-                destinationTile.hasPlayer = false;
-            }
-            if (tiles.TryGetValue(worldPoint, out destinationTile))
-            {
-                print(destinationTile.ToString());
-                destinationTile.TilemapMember.SetTileFlags(destinationTile.LocalPlace, TileFlags.None);
-                squaresToTravelTo = PathFinding.FindPath(playerPos, worldPoint);
-                if(squaresToTravelTo.Count > 0)
-                    destinationNode = squaresToTravelTo.Pop();
+                print(worldTile.ToString());
+                //if we clicked on a sqaure that is within our move distance
+                if (cellsInPlayerMoveRadius.Contains(worldTile))
+                {
+                    WorldTile playerTile;
+                    if (tiles.TryGetValue(playerPos, out playerTile))
+                    {
+                        playerTile.hasPlayer = false;
+                        playerTile.entity = null;
+                    }
+
+                    //lets chart a destination path to the target square
+                    squaresToTravelTo = PathFinding.FindPath(playerPos, worldPoint);
+
+                    //if we can get there, grab the first step
+                    if (squaresToTravelTo.Count > 0)
+                    {
+                        destinationTile = squaresToTravelTo.Pop();
+                    }
+
+                }
             }
         }
 
-        if(destinationNode != null)
+
+        if(destinationTile != null)
         {
-            var nodeVector = new Vector3(destinationNode.gridX, destinationNode.gridY, 0) + new Vector3(0.5f, 0.5f, 0);
-            if (Vector3.Distance(nodeVector, transform.position) > 0.1f)
+            var tilePosition = new Vector3(destinationTile.LocalPlace.x, destinationTile.LocalPlace.y, 0) + new Vector3(0.5f, 0.5f, 0);
+            if (Vector3.Distance(tilePosition, transform.position) > 0.1f)
             {
-                MovePlayer(nodeVector);
+                MovePlayer(tilePosition);
             }
             else
             {
                 if (squaresToTravelTo.Count != 0)
-                    destinationNode = squaresToTravelTo.Pop();
+                {
+                    destinationTile = squaresToTravelTo.Pop();
+                }
                 else
-                    destinationNode = null;
+                    destinationTile = null;
             }
         }
-
-        //if(destinationTile != null && Vector3.Distance(destinationTile.WorldLocation + new Vector3(0.5f, 0.5f, 0), transform.position) > 0.1f)
-        //{
-        //    MovePlayer(destinationTile.WorldLocation + new Vector3(0.5f, 0.5f, 0));
-
-        //}
     }
 
     private void MovePlayer(Vector3 worldLocation)
     {
-        destinationTile.hasPlayer = true;
         transform.position = Vector3.MoveTowards(transform.position,worldLocation,movementSpeed * Time.deltaTime);
 
+    }
+    private void UnHighlightCells(List<WorldTile> cellsPlayerCanMoveTo)
+    {
+        foreach(var tile in GameTiles.tiles.Values)
+        {
+            if (tile.highLightEntity != null)
+            {
+                if (!cellsPlayerCanMoveTo.Contains(tile))
+                {
+                    Destroy(tile.highLightEntity);
+                }
+            }
+        }
+    }
+
+    private void HighLightEmptyCells()
+    {
+        var playerPos = new Vector3Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y), 0);
+
+        foreach (var tile in GetCellsInMoveRadius(playerPos))
+        {
+            if(tile.highLightEntity == null)
+            {
+                var highlightObj = Instantiate(highlightPrefab, tile.WorldLocation + new Vector3(0.5f, 0.5f, 0), Quaternion.identity);
+                tile.highLightEntity = highlightObj;
+            }
+            //tile.TilemapMember.SetTileFlags(tile.LocalPlace, TileFlags.None);
+            //tile.TilemapMember.SetColor(tile.LocalPlace, Color.green);
+        }
+    }
+
+
+
+    private List<WorldTile> GetCellsInMoveRadius(Vector3Int playerPos)
+    {
+        List<WorldTile> NeighborEmptyTiles = new List<WorldTile>();
+        for (int x = playerPos.x - MoveDistance; x <= playerPos.x + MoveDistance; x++)
+        {
+            for (int y = playerPos.y - MoveDistance; y <= playerPos.y + MoveDistance; y++)
+            {
+                //this is our current position, skip it
+                //if(x == playerPos.x && y == playerPos.y)
+                //{
+                //    continue;
+                //}
+
+                var cellPostion = new Vector3(x, y, 0);
+                WorldTile currentCell;
+                if(GameTiles.tiles.TryGetValue(cellPostion, out currentCell))
+                {
+                    if(currentCell.isWalkable)
+                    {
+                        var pathToSquare = PathFinding.FindPath(playerPos, currentCell.WorldLocation);
+                        if (pathToSquare.Count > 0)
+                        {
+                            if (pathToSquare.Count <= MoveDistance)
+                            {
+                                NeighborEmptyTiles.Add(currentCell);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        currentCell.TilemapMember.SetColor(currentCell.LocalPlace, Color.red);
+                        print("Could not walk on tile: \n" + currentCell.ToString());
+                    }
+                }
+            }
+        }
+
+        return NeighborEmptyTiles;
     }
 
 }

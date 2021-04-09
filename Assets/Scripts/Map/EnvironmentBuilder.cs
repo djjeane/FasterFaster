@@ -22,14 +22,14 @@ public class EnvironmentBuilder : ScriptableObject
         int enemiesSpawned = 0;
         while (enemiesSpawned < numWalls)
         {
-            int index = UnityEngine.Random.Range(0, GameTiles.instance.tiles.Count);
-            KeyValuePair<Vector3, WorldTile> wallTile = GameTiles.instance.tiles.ElementAt(index);
+            int index = UnityEngine.Random.Range(0, GameTiles.tiles.Count);
+            var currentTile = GameTiles.tiles.ElementAt(index).Value;
 
-            if (!GameTiles.instance.tiles[wallTile.Key].hasWall)
+            if (!currentTile.hasWall)
             {
-                var wall = Instantiate(wallObject, wallTile.Key + new Vector3(0.5f, 0.5f, 0), Quaternion.identity);
-                GameTiles.instance.tiles[wallTile.Key].hasWall = true;
-                GameTiles.instance.tiles[wallTile.Key].entity = wall;
+                var wall = Instantiate(wallObject, currentTile.WorldLocation + new Vector3(0.5f, 0.5f, 0), Quaternion.identity);
+                currentTile.hasWall = true;
+                currentTile.entity = wall;
                 enemiesSpawned++;
             }
         }
