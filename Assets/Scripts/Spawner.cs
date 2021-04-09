@@ -7,8 +7,8 @@ using UnityEngine;
 public class Spawner : ScriptableObject
 {
 
-    private GameObject playerObject;
-    private GameObject enemyObject;
+    public GameObject playerObject;
+    public GameObject enemyObject;
     public string seed;
     public int numEnemies;
     public bool useRandomSeed;

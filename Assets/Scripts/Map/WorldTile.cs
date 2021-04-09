@@ -31,4 +31,17 @@ public class WorldTile
     public bool hasEnemy { get; set; } = false;
 
     public bool hasItem { get; set; } = false;
+
+    public override string ToString()
+    {
+        string str = "";
+        str += "Tile : " + Name + "\n";
+        str += "Has Wall : " + hasWall + "\n";
+        str += "Has Enemy : " + hasEnemy + "\n";
+        str += "Has Item : " + hasItem + "\n";
+        str += "Has Entity : " + entity != null + "\n";
+
+        return str;
+
+    }
 }

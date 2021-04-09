@@ -15,7 +15,7 @@ public class MapGenerator : MonoBehaviour
     void Start()
     {
         GenerateWorld(useRandomSeed);
-
+        PathGrid.BuildGrid();
 
     }
 
@@ -28,10 +28,15 @@ public class MapGenerator : MonoBehaviour
 
         Random.InitState(seed.GetHashCode());
 
-        var env = new EnvironmentBuilder(wallObject, numWalls);
+        var env = ScriptableObject.CreateInstance<EnvironmentBuilder>();
+        env.wallObject = wallObject;
+        env.numWalls = numWalls;
         env.SpawnWalls();
 
-        var spawner = new Spawner(playerObject, enemyObject, numEnemies);
+        var spawner = ScriptableObject.CreateInstance<Spawner>();
+        spawner.playerObject = playerObject;
+        spawner.enemyObject = enemyObject;
+        spawner.numEnemies = numEnemies;
         spawner.SpawnPlayer();
         spawner.SpawnEnemies();
     }
@@ -51,10 +56,13 @@ public class MapGenerator : MonoBehaviour
                     entry.Value.hasItem = false;
                     entry.Value.hasPlayer = false;
                     entry.Value.hasWall = false;
+                    entry.Value.entity = null;
                 }
             }
 
             GenerateWorld(true);
+            PathGrid.BuildGrid();
+
         }
     }
 }
