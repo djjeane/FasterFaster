@@ -10,32 +10,37 @@ public class PlayerAttack : MonoBehaviour
 
     public GameObject bulletPrefab;
 
-    private Attack attack;
+    private PlayerMeleeAttack meleeAttack;
+    private PlayerRangedAttack rangedAttack;
     // Start is called before the first frame update
     void Start()
     {
-        if (RangedAttack)
-        {
-            attack = ScriptableObject.CreateInstance<PlayerRangedAttack>();
-           
-        }
-        else
-        {
-            attack = ScriptableObject.CreateInstance<PlayerMeleeAttack>();
-            attack.InitMelee(CellAttackRange, transform);
-        }
+
+        rangedAttack = ScriptableObject.CreateInstance<PlayerRangedAttack>();
+        rangedAttack.BulletPrefab = bulletPrefab;
+        rangedAttack.InitRanged(transform);
+
+        meleeAttack = ScriptableObject.CreateInstance<PlayerMeleeAttack>();
+        meleeAttack.InitMelee(CellAttackRange);
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        if (Input.GetKeyDown(attack.attackKey))
+        if (Input.GetKeyDown(rangedAttack.attackKey))
         {
             Vector3 point = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             var worldPoint = new Vector3Int(Mathf.FloorToInt(point.x), Mathf.FloorToInt(point.y), 0);
-            attack.PerformAttack(worldPoint);
-          
+            var playerPos = new Vector3Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y), 0);
+            rangedAttack.PerformAttack(worldPoint,playerPos);
+        }
+        if (Input.GetKeyDown(meleeAttack.attackKey))
+        {
+            Vector3 point = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            var worldPoint = new Vector3Int(Mathf.FloorToInt(point.x), Mathf.FloorToInt(point.y), 0);
+            var playerPos = new Vector3Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y), 0);
+            meleeAttack.PerformAttack(worldPoint, playerPos);
         }
     }
  

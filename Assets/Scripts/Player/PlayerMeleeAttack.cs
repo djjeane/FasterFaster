@@ -7,11 +7,10 @@ public class PlayerMeleeAttack : Attack
 {
     public override KeyCode attackKey { get; set; }
     public override int CellAttackRange { get; set; }
-    public override Transform attackSourceLocation { get; set; }
 
-    internal override void PerformAttack(Vector3Int locationToAttack)
+    internal override void PerformAttack(Vector3Int locationToAttack, Vector3Int playerPos)
     {
-        if (isWithinRange(locationToAttack))
+        if (isWithinRange(locationToAttack, playerPos))
         {
             var tiles = GameTiles.tiles; // This is our Dictionary of tiles
             WorldTile tile;
@@ -20,16 +19,16 @@ public class PlayerMeleeAttack : Attack
                 if (tile.hasEnemy)
                 {
                     tile.hasEnemy = false;
-                    Destroy(tile.entity);
-                    tile.entity = null;
+                    Destroy(tile.enemyEntity);
+                    tile.enemyEntity = null;
                 }
             }
         }
     }
 
-    private bool isWithinRange(Vector3Int worldPoint)
+    private bool isWithinRange(Vector3Int worldPoint,Vector3Int playerPos)
     {
-        var playerPosition = new Vector3Int(Mathf.FloorToInt(attackSourceLocation.position.x), Mathf.FloorToInt(attackSourceLocation.position.y), 0);
+        var playerPosition = new Vector3Int(Mathf.FloorToInt(playerPos.x), Mathf.FloorToInt(playerPos.y), 0);
 
         for (int x = playerPosition.x - CellAttackRange; x <= playerPosition.x + CellAttackRange; x++)
         {
@@ -54,20 +53,18 @@ public abstract class Attack : ScriptableObject
 {
     public abstract KeyCode attackKey { get; set; }
     public abstract int CellAttackRange { get; set; }
-    public abstract Transform attackSourceLocation { get; set; }
+    public GameObject BulletPrefab { get; internal set; }
 
-    internal void InitMelee(int cellAttackRange, Transform transform)
+    internal void InitMelee(int cellAttackRange)
     {
         attackKey = KeyCode.Space;
         CellAttackRange = cellAttackRange;
-        attackSourceLocation = transform;
     }
 
     internal void InitRanged(Transform transform)
     {
-        attackSourceLocation = transform;
     }
 
 
-    internal abstract void PerformAttack(Vector3Int locationToAttack);
+    internal abstract void PerformAttack(Vector3Int locationToAttack, Vector3Int playerPos);
 }

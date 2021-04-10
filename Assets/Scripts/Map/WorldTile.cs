@@ -24,6 +24,8 @@ public class WorldTile
     public int Cost { get; set; }
 
     public GameObject entity { get;set; }
+
+    public GameObject enemyEntity { get; set; }
     public GameObject highLightEntity { get; set; }
     public bool hasPlayer { get; set; } = false;
 
@@ -31,13 +33,15 @@ public class WorldTile
 
     public bool hasEnemy { get; set; } = false;
 
+    public bool hasBullet { get; set; } = false;
+
     public bool hasItem { get; set; } = false;
 
     public bool isWalkable
     {
         get
         {
-            return !hasEnemy && !hasWall && !hasPlayer;
+            return !hasEnemy && !hasWall && !hasPlayer & !hasBullet;
         }
     }
     public override string ToString()
@@ -48,6 +52,7 @@ public class WorldTile
         str += "Has Wall : " + hasWall + "\n";
         str += "Has Enemy : " + hasEnemy + "\n";
         str += "Has Item : " + hasItem + "\n";
+        str += "Has Bullet : " + hasBullet + "\n";
         str += "Has Entity : " + entity != null + "\n";
 
         return str;

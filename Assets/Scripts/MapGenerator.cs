@@ -70,7 +70,7 @@ public class MapGenerator : MonoBehaviour
                 if (tile.hasEnemy)
                 {
                     Destroy(tile.entity);
-                    tile.entity = null;
+                    tile.enemyEntity = null;
                     tile.hasEnemy = false;
                 }
                 if(tile.highLightEntity != null)

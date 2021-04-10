@@ -19,8 +19,8 @@ public class EnvironmentBuilder : ScriptableObject
 
     public void SpawnWalls()
     {
-        int enemiesSpawned = 0;
-        while (enemiesSpawned < numWalls)
+        int wallsSpawned = 0;
+        while (wallsSpawned < numWalls)
         {
             int index = UnityEngine.Random.Range(0, GameTiles.tiles.Count);
             var currentTile = GameTiles.tiles.ElementAt(index).Value;
@@ -30,7 +30,7 @@ public class EnvironmentBuilder : ScriptableObject
                 var wall = Instantiate(wallObject, currentTile.WorldLocation + new Vector3(0.5f, 0.5f, 0), Quaternion.identity);
                 currentTile.hasWall = true;
                 currentTile.entity = wall;
-                enemiesSpawned++;
+                wallsSpawned++;
             }
         }
     }

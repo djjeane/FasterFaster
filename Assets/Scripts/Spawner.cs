@@ -31,7 +31,7 @@ public class Spawner : ScriptableObject
             {
                 var enemy = Instantiate(enemyObject, tile.WorldLocation + new Vector3(0.5f, 0.5f, 0), Quaternion.identity);
                 tile.hasEnemy = true;
-                tile.entity = enemy;
+                tile.enemyEntity = enemy;
                 enemiesSpawned++;
             }
         }
