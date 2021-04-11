@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 294399746721276140}
   - component: {fileID: 8457736649679417240}
   - component: {fileID: 1841019682178003838}
+  - component: {fileID: 6615969738202725406}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -73,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 4
   m_Sprite: {fileID: -9095717837082945937, guid: 34587324d412940a79d530020c957dc0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -98,7 +99,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MoveDistance: 3
-  highlightPrefab: {fileID: 8332899109849562370, guid: e6376af1ee2b58e45b01a1253094579d, type: 3}
 --- !u!114 &8457736649679417240
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -126,3 +126,19 @@ MonoBehaviour:
   CellAttackRange: 1
   RangedAttack: 1
   bulletPrefab: {fileID: 950659161706828684, guid: 7edd52ab0eac55d4e84ffd6aca9ac224, type: 3}
+--- !u!114 &6615969738202725406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3846957854936673593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b93361b2e1b5b54a9fc4d36d3248346, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MoveDistance: 3
+  highlightPrefab: {fileID: 8332899109849562370, guid: e6376af1ee2b58e45b01a1253094579d, type: 3}
+  highlightHoverPrefab: {fileID: 4850635284038163746, guid: c3642b62c1102224fac084e13bb6bc58, type: 3}
+  highlightClickPrefab: {fileID: 3346030285552978434, guid: 5da5f178823a54a42b24c0b179a581e2, type: 3}

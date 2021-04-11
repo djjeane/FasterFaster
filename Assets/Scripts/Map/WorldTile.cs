@@ -5,6 +5,7 @@ using UnityEngine.Tilemaps;
 
 public class WorldTile
 {
+    
 
     public Vector3Int LocalPlace { get; set; }
 
@@ -26,7 +27,10 @@ public class WorldTile
     public GameObject entity { get;set; }
 
     public GameObject enemyEntity { get; set; }
-    public GameObject highLightEntity { get; set; }
+    public GameObject highlightMoveRangeEntity { get; set; }
+    public GameObject highlightMoveHoverEntity { get; set; }
+
+    public GameObject highlightMoveClickEntity { get; set; }
     public bool hasPlayer { get; set; } = false;
 
     public bool hasWall { get; set; } = false;

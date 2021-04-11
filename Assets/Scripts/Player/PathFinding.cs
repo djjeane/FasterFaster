@@ -121,8 +121,8 @@ public static class PathGrid
         {
             var pos = keyValue.Key;
             var tile = keyValue.Value;
-
-            nodes.Add(pos, new Node(tile.entity == null, tile.LocalPlace.x, tile.LocalPlace.y));
+            var isWalkable = !tile.hasWall;
+            nodes.Add(pos, new Node(isWalkable, tile.LocalPlace.x, tile.LocalPlace.y));
         }
     }
 

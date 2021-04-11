@@ -73,10 +73,10 @@ public class MapGenerator : MonoBehaviour
                     tile.enemyEntity = null;
                     tile.hasEnemy = false;
                 }
-                if(tile.highLightEntity != null)
+                if(tile.highlightMoveRangeEntity != null)
                 {
-                    Destroy(tile.highLightEntity);
-                    tile.highLightEntity = null;
+                    Destroy(tile.highlightMoveRangeEntity);
+                    tile.highlightMoveRangeEntity = null;
                 }
 
             }

@@ -5,17 +5,16 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Linq;
 using static GameTiles;
+using Assets.Scripts;
 
 public class PlayerMovement : MonoBehaviour
 {
     public int MoveDistance = 3;
     private float movementSpeed = 10f;
-    public GameObject highlightPrefab;
     private Stack<WorldTile> squaresToTravelTo;
     private WorldTile destinationTile;
 
     private List<WorldTile> cellsInPlayerMoveRadius;
-    private Vector3Int lastPlayerPosition;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,19 +24,26 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        var currentState = EventsManager.currentState;
 
-        //Handles the movement highlighting
-
-        var playerPos = new Vector3Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y), 0);
-        HandleCellHighlighting(playerPos);
-
-        //Handles movement on click
-        if (Input.GetMouseButtonDown(0))
+        if(currentState == GameState.PlayerMovementInput)
         {
-            SetDestinationTile(playerPos);
-        }
+            var playerPos = new Vector3Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y), 0);
 
-        MoveIfNeeded();
+            if (Input.GetMouseButtonDown(0))
+            {
+                SetDestinationTile(playerPos);
+            }
+            //if they push the confirn button and they have chosen a tile, advance the game state
+            if(Input.GetKeyDown(KeyCode.F) && destinationTile != null)
+            {
+                EventsManager.AdvanceState(); 
+            }
+        }
+        if(currentState == GameState.PlayerMovementOutput)
+        {
+            MoveIfNeeded();
+        }
     }
 
     private void MoveIfNeeded()
@@ -61,12 +67,19 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void MovePlayer(Vector3 worldLocation)
+    {
+        transform.position = Vector3.MoveTowards(transform.position, worldLocation, movementSpeed * Time.deltaTime);
+    }
+
     private void SetDestinationTile(Vector3Int playerPos)
     {
         Vector3 point = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         var worldPoint = new Vector3Int(Mathf.FloorToInt(point.x), Mathf.FloorToInt(point.y), 0);
-        WorldTile worldTile;
 
+        cellsInPlayerMoveRadius = GetCellsInMoveRadius(playerPos);
+        
+        WorldTile worldTile;
         //if we clicked on a tile
         if (tiles.TryGetValue(worldPoint, out worldTile))
         {
@@ -92,56 +105,6 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
-
-    private void HandleCellHighlighting(Vector3Int playerPos)
-    {
-        if (lastPlayerPosition != playerPos)
-        {
-            var cellsPlayerCanMoveTo = GetCellsInMoveRadius(playerPos);
-            UnHighlightCells(cellsPlayerCanMoveTo);
-            cellsInPlayerMoveRadius = cellsPlayerCanMoveTo;
-            HighLightEmptyCells();
-            lastPlayerPosition = playerPos;
-        }
-    }
-
-    private void MovePlayer(Vector3 worldLocation)
-    {
-        transform.position = Vector3.MoveTowards(transform.position,worldLocation,movementSpeed * Time.deltaTime);
-
-    }
-    private void UnHighlightCells(List<WorldTile> cellsPlayerCanMoveTo)
-    {
-        foreach(var tile in GameTiles.tiles.Values)
-        {
-            if (tile.highLightEntity != null)
-            {
-                if (!cellsPlayerCanMoveTo.Contains(tile))
-                {
-                    Destroy(tile.highLightEntity);
-                }
-            }
-        }
-    }
-
-    private void HighLightEmptyCells()
-    {
-        var playerPos = new Vector3Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y), 0);
-
-        foreach (var tile in GetCellsInMoveRadius(playerPos))
-        {
-            if(tile.highLightEntity == null)
-            {
-                var highlightObj = Instantiate(highlightPrefab, tile.WorldLocation + new Vector3(0.5f, 0.5f, 0), Quaternion.identity);
-                tile.highLightEntity = highlightObj;
-            }
-            //tile.TilemapMember.SetTileFlags(tile.LocalPlace, TileFlags.None);
-            //tile.TilemapMember.SetColor(tile.LocalPlace, Color.green);
-        }
-    }
-
-
-
     private List<WorldTile> GetCellsInMoveRadius(Vector3Int playerPos)
     {
         List<WorldTile> NeighborEmptyTiles = new List<WorldTile>();
@@ -149,11 +112,6 @@ public class PlayerMovement : MonoBehaviour
         {
             for (int y = playerPos.y - MoveDistance; y <= playerPos.y + MoveDistance; y++)
             {
-                //this is our current position, skip it
-                //if(x == playerPos.x && y == playerPos.y)
-                //{
-                //    continue;
-                //}
 
                 var cellPostion = new Vector3(x, y, 0);
                 WorldTile currentCell;
