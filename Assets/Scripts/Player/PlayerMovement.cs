@@ -62,7 +62,11 @@ public class PlayerMovement : MonoBehaviour
                     destinationTile = squaresToTravelTo.Pop();
                 }
                 else
+                {
                     destinationTile = null;
+                    EventsManager.AdvanceState();
+                }
+                    
             }
         }
     }
