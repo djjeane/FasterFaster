@@ -66,7 +66,6 @@ public class PlayerMovement : MonoBehaviour
                     destinationTile = null;
                     EventsManager.AdvanceState();
                 }
-                    
             }
         }
     }
