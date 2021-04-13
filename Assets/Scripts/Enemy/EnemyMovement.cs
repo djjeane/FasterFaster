@@ -16,7 +16,7 @@ public class EnemyMovement : MonoBehaviour
     void Start()
     {
         //MovementTypes type = (MovementTypes)Random.Range(0, 4);
-        var type = MovementTypes.Random;
+        var type = MovementTypes.Coward;
         movementType = AIMovementTypeFactory.GetAIMovementType(type);
         movementType.Init(this.gameObject);
     }

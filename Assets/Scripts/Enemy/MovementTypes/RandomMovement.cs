@@ -9,11 +9,11 @@ namespace Assets.Scripts.Enemy.MovementTypes
 {
     class RandomMovement : AIMovementBase
     {
-        internal override WorldTile GetDestinationTile(List<WorldTile> cellsInMoveRadius, List<Vector3Int> deniedDestinations)
+        internal override WorldTile GetDestinationTile(Vector3Int currentPosition, List<WorldTile> cellsInMoveRadius, List<Vector3Int> deniedDestinations)
         {
             //Remove the denied destinations from the cellsInMoveRadius
             var availableSquares = cellsInMoveRadius.Where(p => !deniedDestinations.Any(p2 => p2 == p.LocalPlace)).ToList();
-            if(availableSquares.Count > 0)
+            if (availableSquares.Count > 0)
             {
                 int index = UnityEngine.Random.Range(0, availableSquares.Count);
                 var tile = cellsInMoveRadius.ElementAt(index);

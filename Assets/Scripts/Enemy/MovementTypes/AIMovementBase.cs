@@ -22,7 +22,7 @@ public abstract class AIMovementBase
     {
         cellsInMoveRadius = GetCellsInMoveRadius(currentPosition);
 
-        WorldTile destinationTile = GetDestinationTile(cellsInMoveRadius, deniedDestinations);
+        WorldTile destinationTile = GetDestinationTile(currentPosition,cellsInMoveRadius, deniedDestinations);
         //if we clicked on a tile
         if (destinationTile != null)
         {
@@ -41,6 +41,10 @@ public abstract class AIMovementBase
             {
                 this.destinationTile = squaresToTravelTo.Pop();
             }
+        }
+        else
+        {
+            int i = 0;
         }
 
         return destinationTile;
@@ -107,7 +111,7 @@ public abstract class AIMovementBase
         return NeighborEmptyTiles;
     }
 
-    internal abstract WorldTile GetDestinationTile(List<WorldTile> cellsInMoveRadius, List<Vector3Int> deniedDestinations);
+    internal abstract WorldTile GetDestinationTile(Vector3Int currentPosition, List<WorldTile> cellsInMoveRadius, List<Vector3Int> deniedDestinations);
 }
 
 public static class AIMovementTypeFactory

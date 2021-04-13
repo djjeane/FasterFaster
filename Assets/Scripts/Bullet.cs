@@ -14,7 +14,7 @@ public class Bullet : MonoBehaviour
     private Vector3 bulletVelocity;
     private Vector3 nextBulPostion;
     private Vector3 startingBulletPosition;
-    public int tilesPerRound = 2;
+    public int tilesPerRound = 1;
     private int tilesMovedThisRound = 0;
     // Start is called before the first frame update
     void Start()
@@ -30,8 +30,7 @@ public class Bullet : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var currentState = EventsManager.currentState;
-        if (currentState == GameState.BulletMovement)
+        if (EventsManager.currentState == GameState.BulletMovement)
         {
             var currentBulletPos = new Vector3Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y), 0);
             WorldTile currentBulletTile;
@@ -95,6 +94,7 @@ public class Bullet : MonoBehaviour
                     {
                         RemoveBulletFromTile(nextBulPostion);
                         nextBulPostion = nextBulPostion + bulletVelocity;
+                        AddBulletToTile(nextBulPostion);
                         CheckForCollisions();
                     }
                 }
