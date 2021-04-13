@@ -34,8 +34,8 @@ public class PlayerMovement : MonoBehaviour
             {
                 SetDestinationTile(playerPos);
             }
-            //if they push the confirn button and they have chosen a tile, advance the game state
-            if(Input.GetKeyDown(KeyCode.F) && destinationTile != null)
+            //if they push the confirn button, advance the game state
+            if(Input.GetKeyDown(KeyCode.F))
             {
                 EventsManager.AdvanceState(); 
             }
@@ -51,6 +51,7 @@ public class PlayerMovement : MonoBehaviour
         if (destinationTile != null)
         {
             var tilePosition = new Vector3(destinationTile.LocalPlace.x, destinationTile.LocalPlace.y, 0) + new Vector3(0.5f, 0.5f, 0);
+
             if (Vector3.Distance(tilePosition, transform.position) > 0.1f)
             {
                 MovePlayer(tilePosition);
@@ -63,10 +64,11 @@ public class PlayerMovement : MonoBehaviour
                 }
                 else
                 {
-                    destinationTile = null;
+                    destinationTile.hasPlayer = true;
+                    destinationTile.entity = gameObject;
+                    //destinationTile = null;
                     EventsManager.AdvanceState();
                 }
-                    
             }
         }
     }
@@ -87,6 +89,7 @@ public class PlayerMovement : MonoBehaviour
         //if we clicked on a tile
         if (tiles.TryGetValue(worldPoint, out worldTile))
         {
+            
             //if we clicked on a sqaure that is within our move distance
             if (cellsInPlayerMoveRadius.Contains(worldTile))
             {

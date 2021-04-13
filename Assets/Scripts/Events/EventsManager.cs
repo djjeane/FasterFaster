@@ -34,6 +34,7 @@ namespace Assets.Scripts
 
             if (advanceState)
             {
+                currentEvent.CloseEvent();
                 switch (currentState)
                 {
                     case GameState.PlayerMovementInput:
@@ -69,11 +70,6 @@ namespace Assets.Scripts
         internal static void AdvanceState()
         {
             EventsManager.instance.advanceState = true;
-        }
-
-        public int DoSomeThing()
-        {
-            return 1;
         }
 
     }
