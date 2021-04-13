@@ -10,7 +10,7 @@ namespace Assets.Scripts.Enemy.MovementTypes
     public class CowardMovement : AIMovementBase
     {
 
-        internal override WorldTile GetDestinationTile(List<WorldTile> cellsInMoveRadius)
+        internal override WorldTile GetDestinationTile(List<WorldTile> cellsInMoveRadius, List<Vector3Int> deniedDestinations)
         {
             throw new NotImplementedException();
         }

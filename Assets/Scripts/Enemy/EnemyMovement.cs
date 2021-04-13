@@ -6,10 +6,12 @@ using UnityEngine;
 public class EnemyMovement : MonoBehaviour
 { 
     private AIMovementBase movementType;
-    public int turnMoveInterval = 0;
-    private int turnsSinceMove = 0;
+    public int turnMoveInterval = 1;
+    private int turnsSinceMove = 1;
 
     private bool hasMovedThisTurn = false;
+
+    private Vector3Int currentDestinationTile;
     // Start is called before the first frame update
     void Start()
     {
@@ -24,25 +26,40 @@ public class EnemyMovement : MonoBehaviour
     {
         if(EventsManager.currentState == GameState.EnemyMovement)
         {
-            var currentPosition = new Vector3Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y), 0);
-            if (turnsSinceMove == turnMoveInterval && !hasMovedThisTurn)
-            {
-                movementType.SetDestinationTile(currentPosition);
-                turnsSinceMove = 0;
-                hasMovedThisTurn = true;
-            }
-            movementType.DoMovement(transform.position);
+
+            if(currentDestinationTile != Vector3Int.zero)
+                movementType.DoMovement(transform.position);
 
         }
         else
         {
-            if(hasMovedThisTurn)
+            currentDestinationTile = Vector3Int.zero;
+            if (hasMovedThisTurn)
             {
-                //turnsSinceMove++;
+                turnsSinceMove++;
                 hasMovedThisTurn = false;
             }
         }
     }
+
+    public Vector3Int GetDestinationMoveTileOfEnemy(List<Vector3Int> deniedDestinations)
+    {
+        if(movementType != null && turnsSinceMove == turnMoveInterval)
+        {
+            var currentPosition = new Vector3Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y), 0);
+            turnsSinceMove = 0;
+            hasMovedThisTurn = true;
+            return movementType.GetAndSetDestinationTile(currentPosition, deniedDestinations).LocalPlace;
+        }
+        return Vector3Int.zero;
+    }
+
+    public void SetDestination(Vector3Int destination)
+    {
+        currentDestinationTile = destination;
+    }
+
+
 }
 
 public enum MovementTypes

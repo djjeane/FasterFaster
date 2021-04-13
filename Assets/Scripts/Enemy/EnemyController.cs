@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class EnemyController : MonoBehaviour
 {
@@ -14,5 +15,16 @@ public class EnemyController : MonoBehaviour
     void Update()
     {
         
+    }
+    private void OnDestroy()
+    {
+        //var thisId = this.GetInstanceID();
+        //var enemyToRemove = Spawner.Enemies.FirstOrDefault(x => x.GetInstanceID() == thisId);
+        //if(enemyToRemove != null)
+        //{
+        //    Spawner.Enemies.Remove(enemyToRemove);
+        //}
+        Spawner.Enemies.Remove(gameObject);
+        Spawner.Enemies.RemoveAll(item => item == null);
     }
 }

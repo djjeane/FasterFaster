@@ -18,28 +18,32 @@ public abstract class AIMovementBase
     {
         enemyEntity = entity;
     }
-    internal void SetDestinationTile(Vector3Int currentPosition)
+    public  WorldTile GetAndSetDestinationTile(Vector3Int currentPosition, List<Vector3Int> deniedDestinations)
     {
         cellsInMoveRadius = GetCellsInMoveRadius(currentPosition);
 
-        WorldTile movementPoint = GetDestinationTile(cellsInMoveRadius);
+        WorldTile destinationTile = GetDestinationTile(cellsInMoveRadius, deniedDestinations);
         //if we clicked on a tile
-
-        WorldTile enemyTile;
-        if (GameTiles.tiles.TryGetValue(currentPosition, out enemyTile))
+        if (destinationTile != null)
         {
-            enemyTile.hasEnemy = false;
-            enemyTile.enemyEntity = null;
+            WorldTile enemyTile;
+            if (GameTiles.tiles.TryGetValue(currentPosition, out enemyTile))
+            {
+                enemyTile.hasEnemy = false;
+                enemyTile.enemyEntity = null;
+            }
+
+            //lets chart a destination path to the target square
+            squaresToTravelTo = PathFinding.FindPath(currentPosition, destinationTile.WorldLocation);
+
+            //if we can get there, grab the first step
+            if (squaresToTravelTo.Count > 0)
+            {
+                this.destinationTile = squaresToTravelTo.Pop();
+            }
         }
 
-        //lets chart a destination path to the target square
-        squaresToTravelTo = PathFinding.FindPath(currentPosition, movementPoint.WorldLocation);
-
-        //if we can get there, grab the first step
-        if (squaresToTravelTo.Count > 0)
-        {
-            destinationTile = squaresToTravelTo.Pop();
-        }
+        return destinationTile;
     }
 
     internal void DoMovement(Vector3 currentPosition)
@@ -62,7 +66,6 @@ public abstract class AIMovementBase
                     destinationTile.hasEnemy = true;
                     destinationTile.enemyEntity = enemyEntity;
                     destinationTile = null;
-                    EventsManager.AdvanceState();
                 }
 
             }
@@ -104,7 +107,7 @@ public abstract class AIMovementBase
         return NeighborEmptyTiles;
     }
 
-    internal abstract WorldTile GetDestinationTile(List<WorldTile> cellsInMoveRadius);
+    internal abstract WorldTile GetDestinationTile(List<WorldTile> cellsInMoveRadius, List<Vector3Int> deniedDestinations);
 }
 
 public static class AIMovementTypeFactory

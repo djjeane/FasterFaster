@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine.UI;
 using UnityEngine;
+using System.Collections.Generic;
 
 
 namespace Assets.Scripts
@@ -26,6 +27,63 @@ namespace Assets.Scripts
 
     internal class EnemyMovementEvent : GameEvent
     {
+        private HashSet<Vector3Int> destinationTilesHashset;
+        internal override void InitEvent(int eventDurationInSecs, Text currentEventUI, Text timer)
+        {
+            eventStartTime = Time.time;
+            this.currentEventUI = currentEventUI;
+            this.timerUI = timer;
+            this.eventDurationInSecs = eventDurationInSecs;
+
+            destinationTilesHashset = new HashSet<Vector3Int>();
+
+            var enemies = Spawner.Enemies;
+
+
+            //This logic will break if the enemy has no available square to move to, do better
+            foreach(var enemy in enemies)
+            {
+                var deniedDestinations = new List<Vector3Int>();
+                var foundGoodDestination = false;
+                EnemyMovement movement = enemy.GetComponent<EnemyMovement>();
+                while (!foundGoodDestination)
+                {
+                    var destinationSq = movement.GetDestinationMoveTileOfEnemy(deniedDestinations);
+
+                    if(destinationSq != Vector3Int.zero)
+                    {
+                        if (!destinationTilesHashset.Contains(destinationSq))
+                        {
+                            movement.SetDestination(destinationSq);
+                            destinationTilesHashset.Add(destinationSq);
+                            foundGoodDestination = true;
+                        }
+                        else
+                        {
+                            //If we already have an enemy headed there, lets find a new place to go
+                            // add the square to the list of tiles to avoid
+                            deniedDestinations.Add(destinationSq);
+
+                        }
+                    }
+                    else
+                    {
+                        //destination could not be gotten
+                        //just move on 
+                        foundGoodDestination = true;
+                    }
+                  
+                }
+             
+
+            }
+            
+
+        }
+        internal override void CloseEvent()
+        {
+            destinationTilesHashset = null;
+        }
 
         internal override string ToString()
         {
@@ -60,13 +118,13 @@ namespace Assets.Scripts
         }
     }
 
-    public abstract class GameEvent
+    public abstract class GameEvent : ScriptableObject
     {
         protected Text currentEventUI;
         protected Text timerUI;
         protected int eventDurationInSecs;
 
-        private float eventStartTime;
+        internal float eventStartTime;
         internal void FireEvent()
         {
             currentEventUI.text = this.ToString(); 
@@ -76,12 +134,17 @@ namespace Assets.Scripts
             }
         }
 
-        internal void InitEvent(int eventDurationInSecs, Text currentEventUI, Text timer)
+        internal virtual void InitEvent(int eventDurationInSecs, Text currentEventUI, Text timer)
         {
             eventStartTime = Time.time;
             this.currentEventUI = currentEventUI;
             this.timerUI = timer;
             this.eventDurationInSecs = eventDurationInSecs;
+        }
+
+        internal virtual void CloseEvent()
+        {
+
         }
 
         internal abstract string ToString();
@@ -99,17 +162,17 @@ namespace Assets.Scripts
             switch (state)
             {
                 case GameState.PlayerMovementInput:
-                    return new PlayerInputEvent();
+                    return ScriptableObject.CreateInstance<PlayerInputEvent>();
                 case GameState.PlayerMovementOutput:
-                    return new PlayerOutputEvent();
+                    return ScriptableObject.CreateInstance <PlayerOutputEvent>();
                 case GameState.BulletMovement:
-                    return new BulletMovementEvent();
+                    return ScriptableObject.CreateInstance <BulletMovementEvent>();
                 case GameState.EnemyMovement:
-                    return new EnemyMovementEvent();
+                    return ScriptableObject.CreateInstance <EnemyMovementEvent>();
                 case GameState.EnemiesFire:
-                    return new EnemiesFireEvent();
+                    return ScriptableObject.CreateInstance <EnemiesFireEvent>();
                 case GameState.PlayerAttackInput:
-                    return new PlayerAttackInput();
+                    return ScriptableObject.CreateInstance <PlayerAttackInput>();
                 default:
                     return null;
 

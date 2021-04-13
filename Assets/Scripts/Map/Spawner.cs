@@ -13,6 +13,8 @@ public class Spawner : ScriptableObject
     public int numEnemies;
     public bool useRandomSeed;
 
+    public static List<GameObject> Enemies;
+
     public Spawner(GameObject playerObject, GameObject enemyObject, int numEnemies)
     {
         this.playerObject = playerObject;
@@ -23,6 +25,7 @@ public class Spawner : ScriptableObject
     public void SpawnEnemies()
     {
         int enemiesSpawned = 0;
+        Enemies = new List<GameObject>();
         while(enemiesSpawned < numEnemies)
         {
             int index = UnityEngine.Random.Range(0, GameTiles.tiles.Count);
@@ -30,11 +33,14 @@ public class Spawner : ScriptableObject
             if (!tile.hasPlayer && !tile.hasWall && !tile.hasEnemy)
             {
                 var enemy = Instantiate(enemyObject, tile.WorldLocation + new Vector3(0.5f, 0.5f, 0), Quaternion.identity);
+                var movement = enemy.GetComponent<EnemyMovement>();
+                Enemies.Add(enemy);
                 tile.hasEnemy = true;
                 tile.enemyEntity = enemy;
                 enemiesSpawned++;
             }
         }
+        int I = 0;
     }
 
     public void SpawnPlayer()
