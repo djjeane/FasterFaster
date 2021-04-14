@@ -7,7 +7,7 @@ using UnityEngine;
 
 public abstract class AIMovementBase
 {
-    public int MoveDistance = 3;
+    public int MoveDistance = 1;
     private float movementSpeed = 10f;
     private Stack<WorldTile> squaresToTravelTo;
     private WorldTile destinationTile;
@@ -41,10 +41,6 @@ public abstract class AIMovementBase
             {
                 this.destinationTile = squaresToTravelTo.Pop();
             }
-        }
-        else
-        {
-            int i = 0;
         }
 
         return destinationTile;
@@ -124,8 +120,10 @@ public static class AIMovementTypeFactory
                 return new RandomMovement();
             case MovementTypes.Coward:
                 return new CowardMovement();
+            case MovementTypes.Brave:
+                return new BraveMovement();
             default:
-                return new CowardMovement();
+                return new RandomMovement();
         }
     }
 }

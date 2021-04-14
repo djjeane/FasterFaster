@@ -16,7 +16,7 @@ public class EnemyMovement : MonoBehaviour
     void Start()
     {
         //MovementTypes type = (MovementTypes)Random.Range(0, 4);
-        var type = MovementTypes.Coward;
+        var type = MovementTypes.Brave;
         movementType = AIMovementTypeFactory.GetAIMovementType(type);
         movementType.Init(this.gameObject);
     }
@@ -49,7 +49,16 @@ public class EnemyMovement : MonoBehaviour
             var currentPosition = new Vector3Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y), 0);
             turnsSinceMove = 0;
             hasMovedThisTurn = true;
-            return movementType.GetAndSetDestinationTile(currentPosition, deniedDestinations).LocalPlace;
+            var destinationTile = movementType.GetAndSetDestinationTile(currentPosition, deniedDestinations);
+            if(destinationTile != null)
+            {
+                return destinationTile.LocalPlace;
+            }
+            else
+            {
+                //We shouldnt or cant move, so stay in the same place
+                return Vector3Int.zero;
+            }
         }
         return Vector3Int.zero;
     }

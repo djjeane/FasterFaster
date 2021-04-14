@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Enemy.MovementTypes
 {
-    public class CowardMovement : AIMovementBase
+    public class BraveMovement : AIMovementBase
     {
         internal override WorldTile GetDestinationTile(Vector3Int currentPosition, List<WorldTile> cellsInMoveRadius, List<Vector3Int> deniedDestinations)
         {
@@ -21,25 +21,23 @@ namespace Assets.Scripts.Enemy.MovementTypes
                 var availableSquares = cellsInMoveRadius.Where(p => !deniedDestinations.Any(p2 => p2 == p.LocalPlace)).ToList();
 
                 WorldTile currentDestination = null;
-                float longestDistanceFromPlayer = Vector3Int.Distance(playerTile.LocalPlace, currentPosition);
-                foreach(var availableDestination in availableSquares)
+                float shortestDistanceFromPlayer = Vector3Int.Distance(playerTile.LocalPlace, currentPosition);
+                foreach (var availableDestination in availableSquares)
                 {
-                    var distanceToPlayer =  Vector3Int.Distance(playerTile.LocalPlace, availableDestination.LocalPlace);
-                    if(distanceToPlayer > longestDistanceFromPlayer)
+                    var distanceToPlayer = Vector3Int.Distance(playerTile.LocalPlace, availableDestination.LocalPlace);
+                    if (distanceToPlayer < shortestDistanceFromPlayer)
                     {
                         currentDestination = availableDestination;
-                        longestDistanceFromPlayer = distanceToPlayer;
+                        shortestDistanceFromPlayer = distanceToPlayer;
                     }
-
                 }
-               
+
                 return currentDestination;
             }
             else
             {
                 Console.WriteLine("Could not get the player tile");
             }
-
 
             return null;
         }

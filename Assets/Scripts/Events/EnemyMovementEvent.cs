@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +8,7 @@ namespace Assets.Scripts.Events
 {
     internal class EnemyMovementEvent : GameEvent
     {
-        private HashSet<Vector3Int> destinationTilesHashset;
+        private HashSet<Vector3Int> claimedDestinationsHasSet;
         internal override void InitEvent(int eventDurationInSecs, Text currentEventUI, Text timer)
         {
             eventStartTime = Time.time;
@@ -15,7 +16,7 @@ namespace Assets.Scripts.Events
             this.timerUI = timer;
             this.eventDurationInSecs = eventDurationInSecs;
 
-            destinationTilesHashset = new HashSet<Vector3Int>();
+            claimedDestinationsHasSet = new HashSet<Vector3Int>();
 
             var enemies = Spawner.Enemies;
 
@@ -28,22 +29,15 @@ namespace Assets.Scripts.Events
                 EnemyMovement movement = enemy.GetComponent<EnemyMovement>();
                 while (!foundGoodDestination)
                 {
-                    var destinationSq = movement.GetDestinationMoveTileOfEnemy(deniedDestinations);
+                    var destinationSq = movement.GetDestinationMoveTileOfEnemy(claimedDestinationsHasSet.ToList());
 
                     if (destinationSq != Vector3Int.zero)
                     {
-                        if (!destinationTilesHashset.Contains(destinationSq))
+                        if (!claimedDestinationsHasSet.Contains(destinationSq))
                         {
                             movement.SetDestination(destinationSq);
-                            destinationTilesHashset.Add(destinationSq);
+                            claimedDestinationsHasSet.Add(destinationSq);
                             foundGoodDestination = true;
-                        }
-                        else
-                        {
-                            //If we already have an enemy headed there, lets find a new place to go
-                            // add the square to the list of tiles to avoid
-                            deniedDestinations.Add(destinationSq);
-
                         }
                     }
                     else
@@ -62,7 +56,7 @@ namespace Assets.Scripts.Events
         }
         internal override void CloseEvent()
         {
-            destinationTilesHashset = null;
+            claimedDestinationsHasSet = null;
         }
 
         internal override string ToString()

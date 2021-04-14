@@ -281,8 +281,8 @@ MonoBehaviour:
   wallObject: {fileID: 3981952947157535998, guid: 522ac036e1fc537489778ff880e17111, type: 3}
   playerObject: {fileID: 3846957854936673593, guid: 4eabf4b050f913042aa73afa7e189b69, type: 3}
   enemyObject: {fileID: 4229443481681369596, guid: b387fb7fb76586a4c8277c2b6d8a7fc6, type: 3}
-  numEnemies: 20
-  numWalls: 15
+  numEnemies: 5
+  numWalls: 0
   groundTilemap: {fileID: 2108602114}
 --- !u!1 &774657618
 GameObject:
