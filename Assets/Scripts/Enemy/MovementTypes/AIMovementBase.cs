@@ -7,7 +7,7 @@ using UnityEngine;
 
 public abstract class AIMovementBase
 {
-    public int MoveDistance = 3;
+    public int MoveDistance = 1;
     private float movementSpeed = 10f;
     private Stack<WorldTile> squaresToTravelTo;
     private WorldTile destinationTile;
@@ -22,7 +22,7 @@ public abstract class AIMovementBase
     {
         cellsInMoveRadius = GetCellsInMoveRadius(currentPosition);
 
-        WorldTile destinationTile = GetDestinationTile(cellsInMoveRadius, deniedDestinations);
+        WorldTile destinationTile = GetDestinationTile(currentPosition,cellsInMoveRadius, deniedDestinations);
         //if we clicked on a tile
         if (destinationTile != null)
         {
@@ -107,7 +107,7 @@ public abstract class AIMovementBase
         return NeighborEmptyTiles;
     }
 
-    internal abstract WorldTile GetDestinationTile(List<WorldTile> cellsInMoveRadius, List<Vector3Int> deniedDestinations);
+    internal abstract WorldTile GetDestinationTile(Vector3Int currentPosition, List<WorldTile> cellsInMoveRadius, List<Vector3Int> deniedDestinations);
 }
 
 public static class AIMovementTypeFactory
@@ -120,8 +120,10 @@ public static class AIMovementTypeFactory
                 return new RandomMovement();
             case MovementTypes.Coward:
                 return new CowardMovement();
+            case MovementTypes.Brave:
+                return new BraveMovement();
             default:
-                return new CowardMovement();
+                return new RandomMovement();
         }
     }
 }

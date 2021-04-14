@@ -64,6 +64,10 @@ namespace Assets.Scripts
 
             currentEvent.FireEvent();
             advanceState = currentEvent.ShouldAdvanceState();
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                advanceState = true;
+            }
 
         }
 

@@ -14,6 +14,7 @@ public class Spawner : ScriptableObject
     public bool useRandomSeed;
 
     public static List<GameObject> Enemies;
+    public static GameObject Player;
 
     public Spawner(GameObject playerObject, GameObject enemyObject, int numEnemies)
     {
@@ -56,6 +57,7 @@ public class Spawner : ScriptableObject
                 tile.hasPlayer = true;
                 tile.entity = player;
                 spawnedPlayer = true;
+                Player = player;
             }
         }
     }

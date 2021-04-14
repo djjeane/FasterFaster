@@ -34,15 +34,12 @@ public class PlayerMovement : MonoBehaviour
             {
                 SetDestinationTile(playerPos);
             }
-            //if they push the confirn button, advance the game state
-            if(Input.GetKeyDown(KeyCode.F))
-            {
-                EventsManager.AdvanceState(); 
-            }
+
         }
         if(currentState == GameState.PlayerMovementOutput)
         {
             MoveIfNeeded();
+
         }
     }
 
@@ -70,6 +67,10 @@ public class PlayerMovement : MonoBehaviour
                     EventsManager.AdvanceState();
                 }
             }
+        }
+        else
+        {
+            EventsManager.AdvanceState();
         }
     }
 
